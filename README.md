@@ -39,15 +39,15 @@
 
 - 加密演示
 
-![encrypt example](doc/images/encrypt_example.png)
+![encrypt example](docs/images/encrypt_example.png)
 
 - 解密演示
 
-![decrypt example](doc/images/decrypt_example.png)
+![decrypt example](docs/images/decrypt_example.png)
 
 - 解密文件展示
 
-![decrypt files](doc/images/dec_files.png)
+![decrypt files](docs/images/dec_files.png)
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
