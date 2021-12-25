@@ -68,22 +68,20 @@ void MainWindow::EncryptSlot() {
   auto secret = q_secret.toStdString();
   Crypto(src_dir_, dst_dir_, secret, true);
 
-  char info[1024];
-  sprintf(info, "\nUsage time: %lld ms\n", usage_times_);
-  sprintf(info, "\tRead bytes: %lf MB\n", UnitConvert(read_bytes_, Unit::MB));
-  sprintf(info, "\tCrypt bytes: %lf MB\n", UnitConvert(crypt_bytes_, Unit::MB));
-  sprintf(info, "\tWrite bytes: %lf MB\n", UnitConvert(write_bytes_, Unit::MB));
-
   auto megabytes_per_second = static_cast<double>(read_bytes_) / (static_cast<double>(usage_times_) / 1000);
 
-  sprintf(info, "\nSpeed: %lf MB/s, %lf mbps\n",
-          UnitConvert(megabytes_per_second, Unit::MB),
-          UnitConvert(megabytes_per_second, Unit::MB) * 8);
+  auto info = QString(
+      "Encrypt Success\n\nUsage time: %1 ms\nRead bytes: %2 MB\nCrypt bytes: %3 MB\nWrite bytes: %4 MB\n\nSpeed: %5 MB/s, %6 mbps\n")
+      .arg(usage_times_)
+      .arg(UnitConvert(read_bytes_, Unit::MB))
+      .arg(UnitConvert(crypt_bytes_, Unit::MB))
+      .arg(UnitConvert(write_bytes_, Unit::MB))
+      .arg(UnitConvert(megabytes_per_second, Unit::MB))
+      .arg(UnitConvert(megabytes_per_second, Unit::MB) * 8);
 
   ui->decrypt_push_botton->setEnabled(true);
 
-  auto text = tr("Encrypt Success\n") + tr(info);
-  QMessageBox::information(this, tr("Success!!!"), text);
+  QMessageBox::information(this, tr("Success!!!"), info);
 }
 
 void MainWindow::DecryptSlot() {
@@ -104,22 +102,20 @@ void MainWindow::DecryptSlot() {
   auto secret = q_secret.toStdString();
   Crypto(src_dir_, dst_dir_, secret, false);
 
-  char info[1024];
-  sprintf(info, "\nUsage time: %lld ms\n", usage_times_);
-  sprintf(info, "\tRead bytes: %lf MB\n", UnitConvert(read_bytes_, Unit::MB));
-  sprintf(info, "\tCrypt bytes: %lf MB\n", UnitConvert(crypt_bytes_, Unit::MB));
-  sprintf(info, "\tWrite bytes: %lf MB\n", UnitConvert(write_bytes_, Unit::MB));
-
   auto megabytes_per_second = static_cast<double>(read_bytes_) / (static_cast<double>(usage_times_) / 1000);
 
-  sprintf(info, "\nSpeed: %lf MB/s, %lf mbps\n",
-          UnitConvert(megabytes_per_second, Unit::MB),
-          UnitConvert(megabytes_per_second, Unit::MB) * 8);
+  auto info = QString(
+      "Decrypt Success\n\nUsage time: %1 ms\nRead bytes: %2 MB\nCrypt bytes: %3 MB\nWrite bytes: %4 MB\n\nSpeed: %5 MB/s, %6 mbps\n")
+      .arg(usage_times_)
+      .arg(UnitConvert(read_bytes_, Unit::MB))
+      .arg(UnitConvert(crypt_bytes_, Unit::MB))
+      .arg(UnitConvert(write_bytes_, Unit::MB))
+      .arg(UnitConvert(megabytes_per_second, Unit::MB))
+      .arg(UnitConvert(megabytes_per_second, Unit::MB) * 8);
 
   ui->encrypt_push_button->setEnabled(true);
 
-  auto text = tr("Encrypt Success\n") + tr(info);
-  QMessageBox::information(this, tr("Success!!!"), text);
+  QMessageBox::information(this, tr("Success!!!"), info);
 }
 
 QString MainWindow::SelectDir(const QString &_dir) {
@@ -192,7 +188,8 @@ void MainWindow::Crypto(const ::std::string &_src_dir,
   }
 
   // 等待任务执行完成
-  int percent = 0, index = 0, size = static_cast<int>(file_crypt_list.size());
+  int index = 0;
+  ui->progressBar->setMaximum(static_cast<int>(file_crypt_list.size()));
   for (auto &file_crypt: file_crypt_list) {
     file_crypt->Wait();
     read_bytes_ += file_crypt->read_bytes_;
@@ -200,6 +197,7 @@ void MainWindow::Crypto(const ::std::string &_src_dir,
     write_bytes_ += file_crypt->write_bytes_;
 
     // TODO: 显示进度
+    ui->progressBar->setValue(++index);
   }
 
   usage_times_ = std::chrono::duration_cast<std::chrono::milliseconds>(
