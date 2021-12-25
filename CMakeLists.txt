@@ -46,7 +46,9 @@ file(GLOB PROJECT_SOURCES
         "task/read/*.cc"
         "memory/*.cc"
         "task/*.cc"
-        "*.cc")
+        "*.cc"
+        "*.h"
+        "*.ui")
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(${PROJECT_NAME}
